@@ -40,6 +40,20 @@
                         </div>
 
                         <div class="form-group row">
+                            <label for="pin" class="col-sm-4 col-form-label text-md-right">{{ __('PIN') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="pin" type="text" class="form-control{{ $errors->has('pin') ? ' is-invalid' : '' }}" name="pin" value="{{ old('pin') }}" required autofocus>
+
+                                @if ($errors->has('pin'))
+                                    <span class="invalid-feedback">
+                                        <strong>{{ $errors->first('pin') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
                             <div class="col-md-6 offset-md-4">
                                 <div class="checkbox">
                                     <label>
