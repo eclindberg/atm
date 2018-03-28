@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\User;
 use App\Account;
@@ -62,15 +63,30 @@ class DepositsController extends Controller
 
         $account = Account::find($request->account);
 
-        $account->balance = $account->balance + $request->amount;
-        $account->save();
+        DB::beginTransaction();
+        try {
 
-        $deposit = new Transact();
-        $deposit->amount = $request->amount;
-        $deposit->account_id = $request->account;
-        $deposit->user_id = auth()->user()->id;
-        $deposit->save();
+            $new_balance = $account->balance + $request->amount;
+            $affected = DB::update(
+                "update accounts set balance = $new_balance where id = ? and balance = ?", [$account->id, $account->balance]);
+
+            if ($affected == 0) {
+                throw new \Exception('Could not update account balance.');
+            }
+
+            $deposit = new Transact();
+            $deposit->amount = $request->amount;
+            $deposit->account_id = $request->account;
+            $deposit->user_id = auth()->user()->id;
+            $deposit->save();
+            
+            DB::commit();
         
+        } catch (\Throwable $e) {
+            DB::rollback();
+            return redirect("/account/$request->account")->with('error', 'Deposit Failed. ' . $e->getMessage());
+        }
+
         return redirect("/account/$request->account")->with('success', 'Deposit Successful');
     }
 

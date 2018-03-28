@@ -45,9 +45,10 @@
                             <li><a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a></li>
                             <li><a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a></li>
                         @else
-                            <li class="nav-link"><a href='deposit'>deposit</a></li>
-                            <li class="nav-link"><a href='withdrawal'>withdrawal</a></li>
-                            <li class="nav-link"><a href='transfer'>transfer</a></li>
+                            <li class="nav-link"><a href='/home'>home</a></li>
+                            <li class="nav-link"><a href='/deposit'>deposit</a></li>
+                            <li class="nav-link"><a href='/withdrawal'>withdrawal</a></li>
+                            <li class="nav-link"><a href='/transfer'>transfer</a></li>
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }} <span class="caret"></span>

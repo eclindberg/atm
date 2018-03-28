@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\User;
 use App\Account;
 use App\Transact;
@@ -68,21 +69,39 @@ class TransfersController extends Controller
             'amount' => "required|numeric|min:.01|max:$fromAccount->balance"
         ]);
 
-        $fromAccount->balance = $fromAccount->balance - $request->amount;
-        $fromAccount->save();
+        DB::beginTransaction();
+        try {
 
-        $toAccount = Account::find($request->to_account);
-        $toAccount->balance = $toAccount->balance + $request->amount;
-        $toAccount->save();
+            $new_balance = $fromAccount->balance - $request->amount;
+            $this->updateAccountBalance($fromAccount, $new_balance);
+            
+            $toAccount = Account::find($request->to_account);
+            $this->updateAccountBalance($toAccount, $toAccount->balance + $request->amount);            
+            
+            $deposit = new Transact();
+            $deposit->amount = $request->amount;
+            $deposit->account_id = $request->to_account;
+            $deposit->from_account_id = $request->from_account;
+            $deposit->user_id = auth()->user()->id;
+            $deposit->save();
+            
+            DB::commit();
         
-        $deposit = new Transact();
-        $deposit->amount = $request->amount;
-        $deposit->account_id = $request->to_account;
-        $deposit->from_account_id = $request->from_account;
-        $deposit->user_id = auth()->user()->id;
-        $deposit->save();
-
+        } catch (\Throwable $e) {
+            DB::rollback();
+            return redirect("/account/$request->account")->with('error', 'Transfer Failed. ' . $e->getMessage());
+        }
         return redirect("/account/$request->to_account")->with('success', 'Transfer Successful');
+    }
+
+    function updateAccountBalance($account, $balance) {
+        
+        $affected = DB::update(
+            "update accounts set balance = $balance where id = ? and balance = ?", [$account->id, $account->balance]);
+
+        if ($affected == 0) {
+            throw new \Exception('Could not update account balance for account ' . $account->id . '.');    
+        }
     }
 
     /**
