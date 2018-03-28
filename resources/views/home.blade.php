@@ -36,6 +36,15 @@
                         <p>user has no accounts</p>
                     @endif
                 </div>
+                <div class="card-body">
+                {!! Form::open(['action' => 'AccountsController@store', 'method' => 'POST']) !!}
+                <div class="form-group">
+                    {{Form::label('type', 'Add New Account: Type')}}
+                    {{Form::select('type', ['Checking'=>'Checking','Saving'=>'Saving'])}}
+                    {{Form::submit('Submit')}}
+                </div>         
+                {!! Form::close() !!}
+                </div>
             </div>
         </div>
     </div>

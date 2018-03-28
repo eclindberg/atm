@@ -10,6 +10,7 @@
                         {{$account->type}} Account {{$account->id}} Balance: {{$account->balance}}
                     </h3>
                     <div>
+                        <a href="/home">accounts</a>
                         <a href="/deposit/{{$account->id}}">deposit</a>
                         <a href="/withdrawal/{{$account->id}}">withdrawal</a>
                         <a href="/transfer/{{$account->id}}">transfer</a>

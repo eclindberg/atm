@@ -23,6 +23,8 @@ Route::get('/account/{id}', 'AccountsController@index');
 
 Route::get('/home', 'HomeController@index')->name('home');
 
+Route::post('account', 'AccountsController@store');
+
 // resource used for RESTful controller
 //$user_id = auth()->user()->id;
 Route::resource('withdrawal', 'WithdrawalsController');
