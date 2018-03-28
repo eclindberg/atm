@@ -30,9 +30,11 @@ class AccountsController extends Controller
             return redirect("/home")->with('error', "Account $id not found.");
         }
         
-        $transactions = $account->getTransactions();
+        $transactions = Transact::where('account_id', $account->id)
+            ->orWhere('from_account_id', $account->id)
+            ->orderBy('created_at', 'desc')->paginate(5);
+
         return view('account', ['account' => $account, 'transactions' => $transactions]);
-        //return view('account')->with('transactions', $account->transactions);
     }
 
 

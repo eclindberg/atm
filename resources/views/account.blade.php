@@ -6,9 +6,7 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
-                    <h3>
-                        {{$account->type}} Account {{$account->id}} Balance: {{$account->balance}}
-                    </h3>
+                    <h4>{{$account->type}} Account #{{$account->id}}  Balance: {{$account->balance}}</h4>
                     <div>
                         <a href="/home">accounts</a>
                         <a href="/deposit/{{$account->id}}">deposit</a>
@@ -27,21 +25,42 @@
                     @if (count($transactions) > 0)
                     <table class="table">
                         <tr>
-                            <td>TransactionID</td>
                             <td>Type</td>
+                            <td>Date</td>
                             <td align="right">Amount</td>
                             <td align="right">Transfer Account ID</td>
                         </tr>
                         @foreach($transactions as $transaction)
+                            <?php
+
+                            $transaction->type = 'Deposit';
+                                                                    
+                            if ($transaction->account_id == $account->id) {
+                                $transaction->transfer_account_id = $transaction->from_account_id;
+                                if ($transaction->amount < 0) {
+                                    $transaction->type = 'Withdrawal';
+                                    $transaction->amount = number_format($transaction->amount, 2);
+                                }
+                            } else {
+                                $transaction->transfer_account_id = $transaction->account_id;
+                                if ($transaction->amount > 0) {
+                                    $transaction->type = 'Withdrawal';
+                                    $transaction->amount = number_format($transaction->amount *-1, 2);
+                                }
+                            }
+
+                            $createdDate = new DateTime($transaction->created_at);
+
+                            ?>
                             <tr>
-                                <td>{{$transaction->id}}</td>
                                 <td>{{$transaction->type}}</td>
+                                <td>{{$createdDate->format("M-d-Y g:i a")}}</td>
                                 <td align="right">{{$transaction->amount}}</td>
                                 <td align="right">{{$transaction->transfer_account_id}}</td>
                             </tr>
                         @endforeach
-                        <!-- use ORM for pagination $transaction->links -->
                     </table>
+                    {{$transactions->links()}}
                     @else
                         <p>account has no transactions</p>
                     @endif

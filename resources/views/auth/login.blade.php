@@ -43,7 +43,7 @@
                             <label for="pin" class="col-sm-4 col-form-label text-md-right">{{ __('PIN') }}</label>
 
                             <div class="col-md-6">
-                                <input id="pin" type="text" class="form-control{{ $errors->has('pin') ? ' is-invalid' : '' }}" name="pin" value="{{ old('pin') }}" required autofocus>
+                                <input id="pin" type="password" class="form-control{{ $errors->has('pin') ? ' is-invalid' : '' }}" name="pin" value="{{ old('pin') }}" required autofocus>
 
                                 @if ($errors->has('pin'))
                                     <span class="invalid-feedback">
